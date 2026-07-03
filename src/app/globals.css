@@ -1,0 +1,493 @@
+:root {
+  --background: #f5f3ed;
+  --surface: #ffffff;
+  --surface-muted: #f0ede6;
+  --text: #1d2522;
+  --muted: #69736e;
+  --border: #d9d3c8;
+  --green: #23725b;
+  --green-strong: #145843;
+  --blue: #2e5f8f;
+  --gold: #bb8424;
+  --gold-soft: #fff2cf;
+  --danger: #a33b35;
+  --danger-soft: #fff0ee;
+  --shadow: 0 24px 80px rgba(29, 37, 34, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background:
+    linear-gradient(135deg, rgba(35, 114, 91, 0.12), transparent 38%),
+    linear-gradient(315deg, rgba(46, 95, 143, 0.12), transparent 40%),
+    var(--background);
+  color: var(--text);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.appChrome {
+  min-height: 100vh;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 22px 0;
+}
+
+.brand {
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navLinks a {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 0.94rem;
+  font-weight: 650;
+}
+
+.navLinks a:hover {
+  border-color: var(--border);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.pageShell {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 44px 0 72px;
+}
+
+.userPage {
+  display: grid;
+  place-items: start center;
+}
+
+.checkInPanel,
+.adminSurface,
+.loginPanel {
+  width: min(100%, 760px);
+  border: 1px solid rgba(217, 211, 200, 0.9);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: var(--shadow);
+}
+
+.checkInPanel,
+.loginPanel {
+  padding: 32px;
+}
+
+.panelHeader,
+.adminHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.panelHeader {
+  display: block;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--green);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.nameForm {
+  display: grid;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.loginForm {
+  display: grid;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+label {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.inlineControls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+input {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 0 14px;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(46, 95, 143, 0.16);
+}
+
+.button,
+.choiceButton {
+  min-height: 46px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.button:disabled,
+.choiceButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.64;
+}
+
+.primaryButton {
+  min-width: 124px;
+  background: var(--green);
+  color: #ffffff;
+  padding: 0 18px;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: var(--green-strong);
+}
+
+.secondaryButton {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 0 16px;
+}
+
+.identityStrip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 22px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+}
+
+.stripLabel,
+.lastSeen {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.stripValue {
+  margin: 4px 0 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.responseGroup {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.choiceButton {
+  min-height: 84px;
+  font-size: 1.2rem;
+}
+
+.yesChoice {
+  background: #dff3ea;
+  color: var(--green-strong);
+}
+
+.yesChoice:hover:not(:disabled) {
+  background: #cfeade;
+}
+
+.noChoice {
+  background: #e6edf5;
+  color: #244d76;
+}
+
+.noChoice:hover:not(:disabled) {
+  background: #d8e4f1;
+}
+
+.statusMessage {
+  margin: 18px 0 0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+.errorMessage {
+  border: 1px solid rgba(163, 59, 53, 0.24);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.successBlock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  border: 1px solid rgba(35, 114, 91, 0.22);
+  border-radius: 8px;
+  background: #edf8f3;
+  padding: 14px;
+}
+
+.successBlock p {
+  margin: 0;
+  color: var(--green-strong);
+  font-weight: 800;
+}
+
+.adminSurface {
+  width: 100%;
+  padding: 28px;
+}
+
+.adminAuthBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.reportForm {
+  display: grid;
+  grid-template-columns: auto 180px auto;
+  align-items: end;
+  gap: 10px;
+}
+
+.reportForm label {
+  grid-column: 1 / -1;
+}
+
+.reportRange {
+  margin-top: 24px;
+  color: var(--muted);
+  font-weight: 750;
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.metricTile {
+  min-height: 96px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 16px;
+}
+
+.metricTile span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.metricTile strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.tableShell {
+  width: 100%;
+  margin-top: 18px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+table {
+  width: 100%;
+  min-width: 860px;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.nameCell {
+  font-weight: 850;
+}
+
+.datePills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.datePill,
+.statusBadge {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  border-radius: 8px;
+  padding: 0 9px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.datePill {
+  background: #eef4f1;
+  color: #35584d;
+}
+
+.statusBadge {
+  background: #edf0f2;
+  color: #4e5c65;
+  white-space: nowrap;
+}
+
+.goldBadge {
+  background: var(--gold-soft);
+  color: var(--gold);
+}
+
+.mutedText {
+  color: var(--muted);
+}
+
+.emptyCell {
+  height: 96px;
+  color: var(--muted);
+  text-align: center;
+  vertical-align: middle;
+}
+
+@media (max-width: 760px) {
+  .topBar,
+  .pageShell {
+    width: min(100% - 24px, 1120px);
+  }
+
+  .topBar,
+  .adminHeader,
+  .successBlock,
+  .identityStrip {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .checkInPanel,
+  .adminSurface,
+  .loginPanel {
+    padding: 22px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  .adminAuthBar,
+  .inlineControls,
+  .responseGroup,
+  .metricGrid,
+  .reportForm {
+    grid-template-columns: 1fr;
+  }
+
+  .adminAuthBar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .primaryButton {
+    width: 100%;
+  }
+}
