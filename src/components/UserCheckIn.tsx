@@ -141,7 +141,7 @@ export function UserCheckIn() {
             autoComplete="name"
             value={name}
             onChange={(event) => {
-              setName(event.target.value);
+              setName(event.target.value.replace(/[^A-Za-z ]/g, ""));
               setLookup({ status: "idle" });
               setSaveResult(null);
               setError("");
