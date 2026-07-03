@@ -23,6 +23,9 @@ type SaveResult = {
 };
 
 export function UserCheckIn() {
+  const today = new Date();
+  const practiceDay = today.toLocaleDateString(undefined, { weekday: "long" });
+  const practiceDate = today.toLocaleDateString();
   const [name, setName] = useState("");
   const [lookup, setLookup] = useState<LookupState>({ status: "idle" });
   const [isLookingUp, setIsLookingUp] = useState(false);
@@ -120,7 +123,13 @@ export function UserCheckIn() {
     <section className="checkInPanel" aria-labelledby="check-in-title">
       <div className="panelHeader">
         <p className="eyebrow">Daily check-in</p>
-        <h1 id="check-in-title">Did you do your yoga today?</h1>
+        <h1 id="check-in-title">
+          Have you done your practice on{" "}
+          <span className="highlight">
+            {practiceDay} ({practiceDate})
+          </span>
+          ?
+        </h1>
       </div>
 
       <form className="nameForm" onSubmit={handleLookup}>
