@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, KeyboardEvent, useState } from "react";
 
 type LookupState =
   | {
@@ -22,6 +22,10 @@ type SaveResult = {
   response: "yes" | "no";
 };
 
+function sanitizeNameInput(value: string) {
+  return value.replace(/[^A-Za-z]/g, "");
+}
+
 export function UserCheckIn() {
   const today = new Date();
   const practiceDay = today.toLocaleDateString(undefined, { weekday: "long" });
@@ -35,12 +39,14 @@ export function UserCheckIn() {
 
   async function handleLookup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const trimmedName = name.trim();
+    const trimmedName = sanitizeNameInput(name);
 
     if (!trimmedName) {
       setError("Name is required.");
       return;
     }
+
+    setName(trimmedName);
 
     setIsLookingUp(true);
     setError("");
@@ -119,6 +125,12 @@ export function UserCheckIn() {
     setSaveResult(null);
   }
 
+  function handleNameKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === " " || event.code === "Space") {
+      event.preventDefault();
+    }
+  }
+
   return (
     <section className="checkInPanel" aria-labelledby="check-in-title">
       <div className="panelHeader">
@@ -140,8 +152,9 @@ export function UserCheckIn() {
             name="name"
             autoComplete="name"
             value={name}
+            onKeyDown={handleNameKeyDown}
             onChange={(event) => {
-              setName(event.target.value.replace(/[^A-Za-z ]/g, ""));
+              setName(sanitizeNameInput(event.target.value));
               setLookup({ status: "idle" });
               setSaveResult(null);
               setError("");

@@ -378,7 +378,7 @@ input:focus {
 
 table {
   width: 100%;
-  min-width: 860px;
+  min-width: 980px;
   border-collapse: collapse;
 }
 
@@ -398,11 +398,32 @@ th {
   text-transform: uppercase;
 }
 
+th abbr {
+  text-decoration: none;
+}
+
 tbody tr:last-child td {
   border-bottom: 0;
 }
 
 .nameCell {
+  font-weight: 850;
+}
+
+.dateHeader,
+.totalHeader,
+.answerCell,
+.totalCell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.answerCell {
+  vertical-align: middle;
+}
+
+.totalCell {
+  color: var(--green-strong);
   font-weight: 850;
 }
 
@@ -413,13 +434,34 @@ tbody tr:last-child td {
 }
 
 .datePill,
-.statusBadge {
+.statusBadge,
+.answerBadge {
   display: inline-flex;
   min-height: 28px;
   align-items: center;
   border-radius: 8px;
   padding: 0 9px;
   font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.answerBadge {
+  min-width: 44px;
+  justify-content: center;
+}
+
+.answerYes {
+  background: #dff3ea;
+  color: var(--green-strong);
+}
+
+.answerNo {
+  background: #e6edf5;
+  color: #244d76;
+}
+
+.emptyAnswer {
+  color: var(--muted);
   font-weight: 800;
 }
 

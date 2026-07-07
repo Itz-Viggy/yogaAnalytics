@@ -1,5 +1,5 @@
 import { getSevenDayWindow, isWithinDateWindow } from "@/lib/dates";
-import type { CheckInRow } from "@/lib/sheets";
+import type { CheckInResponse, CheckInRow } from "@/lib/sheets";
 
 export type UserReport = {
   name: string;
@@ -9,6 +9,7 @@ export type UserReport = {
   totalCount: number;
   yesDates: string[];
   noDates: string[];
+  responsesByDate: Partial<Record<string, CheckInResponse>>;
   goldStar: boolean;
 };
 
@@ -46,11 +47,13 @@ export function buildReport(rows: CheckInRow[], endDate: string): ReportResult {
         totalCount: 0,
         yesDates: [],
         noDates: [],
+        responsesByDate: {},
         goldStar: false
       } satisfies UserReport);
 
     existing.name = row.name || existing.name;
     existing.totalCount += 1;
+    existing.responsesByDate[row.date] = row.response;
 
     if (row.response === "yes") {
       existing.yesCount += 1;
