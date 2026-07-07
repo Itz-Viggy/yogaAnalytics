@@ -163,7 +163,7 @@ export function AdminReport({ defaultDate }: AdminReportProps) {
           <h1 id="admin-title">Seven day report</h1>
         </div>
         <form className="reportForm" onSubmit={handleSubmit}>
-          <label htmlFor="report-date">End date</label>
+          <label htmlFor="report-date"> Select End date</label>
           <input
             id="report-date"
             type="date"
@@ -202,14 +202,6 @@ export function AdminReport({ defaultDate }: AdminReportProps) {
             <div className="metricTile">
               <span>Gold stars</span>
               <strong>{report.summary.goldStarCount}</strong>
-            </div>
-            <div className="metricTile">
-              <span>Yes</span>
-              <strong>{report.summary.yesCount}</strong>
-            </div>
-            <div className="metricTile">
-              <span>No</span>
-              <strong>{report.summary.noCount}</strong>
             </div>
           </div>
 
