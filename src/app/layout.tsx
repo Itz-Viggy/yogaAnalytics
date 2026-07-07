@@ -19,7 +19,7 @@ export default function RootLayout({
         <div className="appChrome">
           <header className="topBar">
             <Link href="/" className="brand">
-              Sky Yoga Daily Fitness Report
+              SKY Yoga Daily Fitness Report
             </Link>
             <nav className="navLinks" aria-label="Primary navigation">
               <Link href="/">Check-in</Link>
