@@ -64,6 +64,54 @@ function ResponseCell({ response }: { response?: CheckInResponse }) {
   );
 }
 
+function escapeCsvValue(value: string | number) {
+  const stringValue = String(value);
+
+  if (!/[",\r\n]/.test(stringValue)) {
+    return stringValue;
+  }
+
+  return `"${stringValue.replace(/"/g, '""')}"`;
+}
+
+function buildReportCsv(report: ReportData) {
+  const headers = [
+    "Name",
+    ...report.window.dates,
+    "Total",
+    "Gold star"
+  ];
+  const rows = report.users.map((user) => [
+    user.name,
+    ...report.window.dates.map((reportDate) => {
+      const response = user.responsesByDate[reportDate];
+      return response ? (response === "yes" ? "Yes" : "No") : "";
+    }),
+    user.yesCount,
+    user.goldStar ? "Yes" : "No"
+  ]);
+
+  return [headers, ...rows]
+    .map((row) => row.map(escapeCsvValue).join(","))
+    .join("\r\n");
+}
+
+function downloadCsv(report: ReportData) {
+  const csv = buildReportCsv(report);
+  const blob = new Blob([`\uFEFF${csv}`], {
+    type: "text/csv;charset=utf-8"
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = `yoga-report-${report.window.startDate}-to-${report.window.endDate}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 export function AdminReport({ defaultDate }: AdminReportProps) {
   const [date, setDate] = useState(defaultDate);
   const [report, setReport] = useState<ReportData | null>(null);
@@ -132,8 +180,18 @@ export function AdminReport({ defaultDate }: AdminReportProps) {
 
       {report ? (
         <>
-          <div className="reportRange">
-            {formatDate(report.window.startDate)} to {formatDate(report.window.endDate)}
+          <div className="reportToolbar">
+            <div className="reportRange">
+              {formatDate(report.window.startDate)} to{" "}
+              {formatDate(report.window.endDate)}
+            </div>
+            <button
+              className="button secondaryButton"
+              type="button"
+              onClick={() => downloadCsv(report)}
+            >
+              Download CSV
+            </button>
           </div>
 
           <div className="metricGrid" aria-label="Report summary">
