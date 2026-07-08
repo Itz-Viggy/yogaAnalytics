@@ -1,6 +1,6 @@
 import { createSign, randomUUID } from "node:crypto";
 
-import { getTodayDate } from "@/lib/dates";
+import { getSevenDayWindow, getTodayDate } from "@/lib/dates";
 import { normalizeName, toDisplayName } from "@/lib/names";
 
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
@@ -26,6 +26,11 @@ export type CheckInRow = {
   response: CheckInResponse;
   createdAt: string;
   updatedAt: string;
+};
+
+export type CheckInHistoryItem = {
+  date: string;
+  response: CheckInResponse | null;
 };
 
 type GoogleSheetsConfig = {
@@ -243,6 +248,36 @@ export async function getCheckIns() {
     .filter((row): row is CheckInRow => Boolean(row));
 }
 
+function getSevenDayCheckInHistory(
+  rows: CheckInRow[],
+  normalizedName: string,
+  endDate = getTodayDate()
+): CheckInHistoryItem[] {
+  const window = getSevenDayWindow(endDate);
+  const windowDates = new Set(window.dates);
+  const responseByDate = new Map<string, CheckInRow>();
+
+  for (const row of rows) {
+    if (row.normalizedName !== normalizedName || !windowDates.has(row.date)) {
+      continue;
+    }
+
+    const current = responseByDate.get(row.date);
+
+    if (!current || row.updatedAt.localeCompare(current.updatedAt) > 0) {
+      responseByDate.set(row.date, row);
+    }
+  }
+
+  return window.dates
+    .slice()
+    .reverse()
+    .map((date) => ({
+      date,
+      response: responseByDate.get(date)?.response || null
+    }));
+}
+
 export async function findUserByName(name: string) {
   const normalizedName = normalizeName(name);
 
@@ -251,19 +286,25 @@ export async function findUserByName(name: string) {
       exists: false,
       normalizedName,
       name: toDisplayName(name),
-      lastCheckInDate: null as string | null
+      lastCheckInDate: null as string | null,
+      sevenDayCheckIns: [] as CheckInHistoryItem[]
     };
   }
 
   const rows = await getCheckIns();
   const matches = rows.filter((row) => row.normalizedName === normalizedName);
-  const latest = matches.at(-1);
+  const sevenDayCheckIns = getSevenDayCheckInHistory(rows, normalizedName);
+  const latest = matches
+    .filter((row) => row.date)
+    .sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt.localeCompare(a.updatedAt))
+    .at(0);
 
   return {
     exists: Boolean(latest),
     normalizedName,
     name: latest?.name || toDisplayName(name),
-    lastCheckInDate: latest?.date || null
+    lastCheckInDate: latest?.date || null,
+    sevenDayCheckIns
   };
 }
 
@@ -289,17 +330,31 @@ export async function upsertCheckIn(input: {
   const timestamp = new Date().toISOString();
 
   if (todayRow) {
+    const updatedRow = {
+      ...todayRow,
+      name,
+      normalizedName,
+      date,
+      response: input.response,
+      createdAt: todayRow.createdAt || timestamp,
+      updatedAt: timestamp
+    } satisfies CheckInRow;
+
     await writeValues(config, `A${todayRow.rowNumber}:G${todayRow.rowNumber}`, [
       [
-        todayRow.id,
-        name,
-        normalizedName,
-        date,
-        input.response,
-        todayRow.createdAt || timestamp,
-        timestamp
+        updatedRow.id,
+        updatedRow.name,
+        updatedRow.normalizedName,
+        updatedRow.date,
+        updatedRow.response,
+        updatedRow.createdAt,
+        updatedRow.updatedAt
       ]
     ]);
+
+    const updatedRows = rows.map((row) =>
+      row.rowNumber === todayRow.rowNumber ? updatedRow : row
+    );
 
     return {
       action: "updated" as const,
@@ -307,19 +362,30 @@ export async function upsertCheckIn(input: {
       date,
       name,
       normalizedName,
-      response: input.response
+      response: input.response,
+      sevenDayCheckIns: getSevenDayCheckInHistory(updatedRows, normalizedName, date)
     };
   }
 
   const id = randomUUID();
-  const row = [
+  const newRow = {
+    rowNumber: rows.length + 2,
     id,
     name,
     normalizedName,
     date,
-    input.response,
-    timestamp,
-    timestamp
+    response: input.response,
+    createdAt: timestamp,
+    updatedAt: timestamp
+  } satisfies CheckInRow;
+  const row = [
+    newRow.id,
+    newRow.name,
+    newRow.normalizedName,
+    newRow.date,
+    newRow.response,
+    newRow.createdAt,
+    newRow.updatedAt
   ];
   const appendRange = sheetRange(config.tabName, "A:G");
 
@@ -341,6 +407,7 @@ export async function upsertCheckIn(input: {
     date,
     name,
     normalizedName,
-    response: input.response
+    response: input.response,
+    sevenDayCheckIns: getSevenDayCheckInHistory([...rows, newRow], normalizedName, date)
   };
 }

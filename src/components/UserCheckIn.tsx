@@ -2,6 +2,13 @@
 
 import { FormEvent, KeyboardEvent, useState } from "react";
 
+type CheckInResponse = "yes" | "no";
+
+type SevenDayCheckIn = {
+  date: string;
+  response: CheckInResponse | null;
+};
+
 type LookupState =
   | {
       status: "idle";
@@ -11,6 +18,7 @@ type LookupState =
       name: string;
       normalizedName: string;
       lastCheckInDate: string | null;
+      sevenDayCheckIns: SevenDayCheckIn[];
     };
 
 type SaveResult = {
@@ -19,11 +27,106 @@ type SaveResult = {
   date: string;
   name: string;
   normalizedName: string;
-  response: "yes" | "no";
+  response: CheckInResponse;
+  sevenDayCheckIns: SevenDayCheckIn[];
 };
 
 function sanitizeNameInput(value: string) {
   return value.replace(/[^A-Za-z]/g, "");
+}
+
+function getSevenDayCheckIns(value: unknown): SevenDayCheckIn[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.filter(
+    (item): item is SevenDayCheckIn =>
+      typeof item === "object" &&
+      item !== null &&
+      "date" in item &&
+      "response" in item &&
+      typeof item.date === "string" &&
+      (item.response === "yes" ||
+        item.response === "no" ||
+        item.response === null)
+  );
+}
+
+function formatHistoryDate(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+
+  if (!year || !month || !day) {
+    return value;
+  }
+
+  return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString(
+    undefined,
+    {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    }
+  );
+}
+
+function getHistoryLabel(response: CheckInResponse | null) {
+  if (response === "yes") {
+    return "Yes";
+  }
+
+  if (response === "no") {
+    return "No";
+  }
+
+  return "No check-in";
+}
+
+function getHistoryClassName(response: CheckInResponse | null) {
+  if (response === "yes") {
+    return "historyYes";
+  }
+
+  if (response === "no") {
+    return "historyNo";
+  }
+
+  return "historyMissing";
+}
+
+function SevenDayCheckInHistory({ entries }: { entries: SevenDayCheckIn[] }) {
+  const yesCount = entries.filter((entry) => entry.response === "yes").length;
+  const noCount = entries.filter((entry) => entry.response === "no").length;
+  const missingCount = entries.filter((entry) => entry.response === null).length;
+
+  return (
+    <div className="historyBlock" aria-label="Your past seven days">
+      <div className="historyHeader">
+        <div>
+          <p className="stripLabel">Past 7 days</p>
+          <p className="historySummary">
+            {entries.length > 0
+              ? `${yesCount} yes, ${noCount} no, ${missingCount} no check-in`
+              : "No previous check-ins yet."}
+          </p>
+        </div>
+      </div>
+
+      {entries.length > 0 ? (
+        <ol className="historyList">
+          {entries.map((entry) => (
+            <li key={entry.date}>
+              <span>{formatHistoryDate(entry.date)}</span>
+              <span className={`historyBadge ${getHistoryClassName(entry.response)}`}>
+                {getHistoryLabel(entry.response)}
+              </span>
+            </li>
+          ))}
+        </ol>
+      ) : null}
+    </div>
+  );
 }
 
 export function UserCheckIn() {
@@ -67,7 +170,8 @@ export function UserCheckIn() {
         status: data.exists ? "found" : "new",
         name: data.name,
         normalizedName: data.normalizedName,
-        lastCheckInDate: data.lastCheckInDate
+        lastCheckInDate: data.lastCheckInDate,
+        sevenDayCheckIns: getSevenDayCheckIns(data.sevenDayCheckIns)
       });
       setName(data.name);
     } catch (lookupError) {
@@ -107,7 +211,8 @@ export function UserCheckIn() {
         status: "found",
         name: data.name,
         normalizedName: data.normalizedName,
-        lastCheckInDate: data.date
+        lastCheckInDate: data.date,
+        sevenDayCheckIns: getSevenDayCheckIns(data.sevenDayCheckIns)
       });
     } catch (saveError) {
       setError(
@@ -179,6 +284,10 @@ export function UserCheckIn() {
             <p className="lastSeen">Last check-in: {lookup.lastCheckInDate}</p>
           ) : null}
         </div>
+      ) : null}
+
+      {lookup.status !== "idle" ? (
+        <SevenDayCheckInHistory entries={lookup.sevenDayCheckIns} />
       ) : null}
 
       {lookup.status !== "idle" ? (
