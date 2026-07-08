@@ -414,6 +414,14 @@ input:focus {
   font-weight: 750;
 }
 
+.reportActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .metricGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -603,6 +611,16 @@ tbody tr:last-child td {
   .reportToolbar {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .reportActions {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+  }
+
+  .reportActions .button {
+    width: 100%;
   }
 
   .adminAuthBar {

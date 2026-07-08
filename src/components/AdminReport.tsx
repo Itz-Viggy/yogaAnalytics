@@ -74,14 +74,14 @@ function escapeCsvValue(value: string | number) {
   return `"${stringValue.replace(/"/g, '""')}"`;
 }
 
-function buildReportCsv(report: ReportData) {
+function buildReportCsv(report: ReportData, users = report.users) {
   const headers = [
     "Name",
     ...report.window.dates,
     "Total",
     "Gold star"
   ];
-  const rows = report.users.map((user) => [
+  const rows = users.map((user) => [
     user.name,
     ...report.window.dates.map((reportDate) => {
       const response = user.responsesByDate[reportDate];
@@ -96,16 +96,21 @@ function buildReportCsv(report: ReportData) {
     .join("\r\n");
 }
 
-function downloadCsv(report: ReportData) {
-  const csv = buildReportCsv(report);
+function downloadCsv(report: ReportData, options?: { goldStarOnly?: boolean }) {
+  const goldStarOnly = options?.goldStarOnly || false;
+  const users = goldStarOnly
+    ? report.users.filter((user) => user.goldStar)
+    : report.users;
+  const csv = buildReportCsv(report, users);
   const blob = new Blob([`\uFEFF${csv}`], {
     type: "text/csv;charset=utf-8"
   });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
+  const filePrefix = goldStarOnly ? "yoga-gold-star-report" : "yoga-report";
 
   link.href = url;
-  link.download = `yoga-report-${report.window.startDate}-to-${report.window.endDate}.csv`;
+  link.download = `${filePrefix}-${report.window.startDate}-to-${report.window.endDate}.csv`;
   document.body.appendChild(link);
   link.click();
   link.remove();
@@ -185,13 +190,22 @@ export function AdminReport({ defaultDate }: AdminReportProps) {
               {formatDate(report.window.startDate)} to{" "}
               {formatDate(report.window.endDate)}
             </div>
-            <button
-              className="button secondaryButton"
-              type="button"
-              onClick={() => downloadCsv(report)}
-            >
-              Download CSV
-            </button>
+            <div className="reportActions">
+              <button
+                className="button secondaryButton"
+                type="button"
+                onClick={() => downloadCsv(report)}
+              >
+                Download CSV
+              </button>
+              <button
+                className="button secondaryButton"
+                type="button"
+                onClick={() => downloadCsv(report, { goldStarOnly: true })}
+              >
+                Download Gold Star CSV
+              </button>
+            </div>
           </div>
 
           <div className="metricGrid" aria-label="Report summary">
