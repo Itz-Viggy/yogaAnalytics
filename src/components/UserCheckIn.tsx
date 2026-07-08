@@ -145,7 +145,7 @@ export function UserCheckIn() {
       </div>
 
       <form className="nameForm" onSubmit={handleLookup}>
-        <label htmlFor="student-name">Name</label>
+        <label htmlFor="student-name">Name (Please enter your short Name)</label>
         <div className="inlineControls">
           <input
             id="student-name"
