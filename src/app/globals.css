@@ -243,6 +243,75 @@ input:focus {
   font-weight: 800;
 }
 
+.historyBlock {
+  margin-top: 18px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 18px;
+}
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.historySummary {
+  margin: 4px 0 0;
+  color: var(--text);
+  font-size: 0.96rem;
+  font-weight: 800;
+}
+
+.historyList {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.historyList li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 38px;
+  border: 1px solid rgba(217, 211, 200, 0.78);
+  border-radius: 8px;
+  background: rgba(245, 243, 237, 0.58);
+  padding: 7px 10px;
+  color: var(--text);
+  font-weight: 750;
+}
+
+.historyBadge {
+  display: inline-flex;
+  min-width: 46px;
+  min-height: 26px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0 9px;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.historyYes {
+  background: #dff3ea;
+  color: var(--green-strong);
+}
+
+.historyNo {
+  background: #e6edf5;
+  color: #244d76;
+}
+
+.historyMissing {
+  background: #edf0f2;
+  color: #4e5c65;
+}
+
 .responseGroup {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -332,15 +401,22 @@ input:focus {
   grid-column: 1 / -1;
 }
 
-.reportRange {
+.reportToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-top: 24px;
+}
+
+.reportRange {
   color: var(--muted);
   font-weight: 750;
 }
 
 .metricGrid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin-top: 16px;
 }
@@ -522,6 +598,11 @@ tbody tr:last-child td {
   .metricGrid,
   .reportForm {
     grid-template-columns: 1fr;
+  }
+
+  .reportToolbar {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .adminAuthBar {
