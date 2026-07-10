@@ -273,24 +273,6 @@ export function UserCheckIn() {
       </form>
 
       {lookup.status !== "idle" ? (
-        <div className="identityStrip">
-          <div>
-            <p className="stripLabel">
-              {lookup.status === "found" ? "Matched user" : "New user"}
-            </p>
-            <p className="stripValue">{lookup.name}</p>
-          </div>
-          {lookup.lastCheckInDate ? (
-            <p className="lastSeen">Last check-in: {lookup.lastCheckInDate}</p>
-          ) : null}
-        </div>
-      ) : null}
-
-      {lookup.status !== "idle" ? (
-        <SevenDayCheckInHistory entries={lookup.sevenDayCheckIns} />
-      ) : null}
-
-      {lookup.status !== "idle" ? (
         <div className="responseGroup" aria-label="Yoga response">
           <button
             className="choiceButton yesChoice"
@@ -309,6 +291,24 @@ export function UserCheckIn() {
             No
           </button>
         </div>
+      ) : null}
+
+      {lookup.status !== "idle" ? (
+        <div className="identityStrip">
+          <div>
+            <p className="stripLabel">
+              {lookup.status === "found" ? "Matched user" : "New user"}
+            </p>
+            <p className="stripValue">{lookup.name}</p>
+          </div>
+          {lookup.lastCheckInDate ? (
+            <p className="lastSeen">Last check-in: {lookup.lastCheckInDate}</p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {lookup.status !== "idle" ? (
+        <SevenDayCheckInHistory entries={lookup.sevenDayCheckIns} />
       ) : null}
 
       {error ? <p className="statusMessage errorMessage">{error}</p> : null}
