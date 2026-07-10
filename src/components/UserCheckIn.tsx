@@ -104,7 +104,7 @@ function SevenDayCheckInHistory({ entries }: { entries: SevenDayCheckIn[] }) {
     <div className="historyBlock" aria-label="Your past seven days">
       <div className="historyHeader">
         <div>
-          <p className="stripLabel">Past 7 days</p>
+          <p className="stripLabel">Past 7 days Report</p>
           <p className="historySummary">
             {entries.length > 0
               ? `${yesCount} yes, ${noCount} no, ${missingCount} no check-in`
@@ -301,17 +301,8 @@ export function UserCheckIn() {
             </p>
             <p className="stripValue">{lookup.name}</p>
           </div>
-          {lookup.lastCheckInDate ? (
-            <p className="lastSeen">Last check-in: {lookup.lastCheckInDate}</p>
-          ) : null}
         </div>
       ) : null}
-
-      {lookup.status !== "idle" ? (
-        <SevenDayCheckInHistory entries={lookup.sevenDayCheckIns} />
-      ) : null}
-
-      {error ? <p className="statusMessage errorMessage">{error}</p> : null}
 
       {saveResult ? (
         <div className="successBlock" role="status">
@@ -324,6 +315,12 @@ export function UserCheckIn() {
           </button>
         </div>
       ) : null}
+
+      {lookup.status !== "idle" ? (
+        <SevenDayCheckInHistory entries={lookup.sevenDayCheckIns} />
+      ) : null}
+
+      {error ? <p className="statusMessage errorMessage">{error}</p> : null}
     </section>
   );
 }
