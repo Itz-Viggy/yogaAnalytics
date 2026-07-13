@@ -266,32 +266,35 @@ export function UserCheckIn() {
             }}
             placeholder="Your name"
           />
+        </div>
+
+        {lookup.status !== "idle" ? (
+          <div className="responseGroup" aria-label="Yoga response">
+            <button
+              className="choiceButton yesChoice"
+              type="button"
+              onClick={() => saveCheckIn("yes")}
+              disabled={isSaving}
+            >
+              Yes
+            </button>
+            <button
+              className="choiceButton noChoice"
+              type="button"
+              onClick={() => saveCheckIn("no")}
+              disabled={isSaving}
+            >
+              No
+            </button>
+          </div>
+        ) : null}
+
+        <div className="inlineControls">
           <button className="button primaryButton" type="submit" disabled={isLookingUp}>
             {isLookingUp ? "Checking" : "Submit"}
           </button>
         </div>
       </form>
-
-      {lookup.status !== "idle" ? (
-        <div className="responseGroup" aria-label="Yoga response">
-          <button
-            className="choiceButton yesChoice"
-            type="button"
-            onClick={() => saveCheckIn("yes")}
-            disabled={isSaving}
-          >
-            Yes
-          </button>
-          <button
-            className="choiceButton noChoice"
-            type="button"
-            onClick={() => saveCheckIn("no")}
-            disabled={isSaving}
-          >
-            No
-          </button>
-        </div>
-      ) : null}
 
       {lookup.status !== "idle" ? (
         <div className="identityStrip">
