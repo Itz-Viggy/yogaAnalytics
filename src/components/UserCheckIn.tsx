@@ -267,7 +267,7 @@ export function UserCheckIn() {
             placeholder="Your name"
           />
           <button className="button primaryButton" type="submit" disabled={isLookingUp}>
-            {isLookingUp ? "Checking" : "Continue"}
+            {isLookingUp ? "Checking" : "Submit"}
           </button>
         </div>
       </form>
