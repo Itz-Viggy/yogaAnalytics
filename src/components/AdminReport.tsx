@@ -190,21 +190,24 @@ export function AdminReport({ defaultDate }: AdminReportProps) {
               {formatDate(report.window.startDate)} to{" "}
               {formatDate(report.window.endDate)}
             </div>
-            <div className="reportActions">
-              <button
-                className="button secondaryButton"
-                type="button"
-                onClick={() => downloadCsv(report)}
-              >
-                Download CSV
-              </button>
-              <button
-                className="button secondaryButton"
-                type="button"
-                onClick={() => downloadCsv(report, { goldStarOnly: true })}
-              >
-                Download Gold Star CSV
-              </button>
+            <div className="reportDownloads">
+              <p className="reportDownloadsLabel">Generated Reports</p>
+              <div className="reportActions">
+                <button
+                  className="button secondaryButton"
+                  type="button"
+                  onClick={() => downloadCsv(report)}
+                >
+                  Download CSV
+                </button>
+                <button
+                  className="button secondaryButton"
+                  type="button"
+                  onClick={() => downloadCsv(report, { goldStarOnly: true })}
+                >
+                  Download Gold Star CSV
+                </button>
+              </div>
             </div>
           </div>
 

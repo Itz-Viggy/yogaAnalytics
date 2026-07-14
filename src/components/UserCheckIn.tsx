@@ -134,13 +134,14 @@ export function UserCheckIn() {
   const practiceDay = today.toLocaleDateString(undefined, { weekday: "long" });
   const practiceDate = today.toLocaleDateString();
   const [name, setName] = useState("");
+  const [selectedResponse, setSelectedResponse] =
+    useState<CheckInResponse | null>(null);
   const [lookup, setLookup] = useState<LookupState>({ status: "idle" });
-  const [isLookingUp, setIsLookingUp] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
   const [saveResult, setSaveResult] = useState<SaveResult | null>(null);
 
-  async function handleLookup(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmedName = sanitizeNameInput(name);
 
@@ -149,45 +150,15 @@ export function UserCheckIn() {
       return;
     }
 
-    setName(trimmedName);
-
-    setIsLookingUp(true);
-    setError("");
-    setSaveResult(null);
-
-    try {
-      const response = await fetch(
-        `/api/users/lookup?name=${encodeURIComponent(trimmedName)}`,
-        { cache: "no-store" }
-      );
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Unable to look up user.");
-      }
-
-      setLookup({
-        status: data.exists ? "found" : "new",
-        name: data.name,
-        normalizedName: data.normalizedName,
-        lastCheckInDate: data.lastCheckInDate,
-        sevenDayCheckIns: getSevenDayCheckIns(data.sevenDayCheckIns)
-      });
-      setName(data.name);
-    } catch (lookupError) {
-      setError(
-        lookupError instanceof Error
-          ? lookupError.message
-          : "Unable to look up user."
-      );
-    } finally {
-      setIsLookingUp(false);
+    if (!selectedResponse) {
+      setError("Please select Yes or No.");
+      return;
     }
-  }
 
-  async function saveCheckIn(responseValue: "yes" | "no") {
+    setName(trimmedName);
     setIsSaving(true);
     setError("");
+    setSaveResult(null);
 
     try {
       const response = await fetch("/api/checkin", {
@@ -196,8 +167,8 @@ export function UserCheckIn() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          name,
-          response: responseValue
+          name: trimmedName,
+          response: selectedResponse
         })
       });
       const data = await response.json();
@@ -208,7 +179,7 @@ export function UserCheckIn() {
 
       setSaveResult(data);
       setLookup({
-        status: "found",
+        status: data.userStatus === "existing" ? "found" : "new",
         name: data.name,
         normalizedName: data.normalizedName,
         lastCheckInDate: data.date,
@@ -225,6 +196,7 @@ export function UserCheckIn() {
 
   function resetFlow() {
     setName("");
+    setSelectedResponse(null);
     setLookup({ status: "idle" });
     setError("");
     setSaveResult(null);
@@ -249,7 +221,7 @@ export function UserCheckIn() {
         </h1>
       </div>
 
-      <form className="nameForm" onSubmit={handleLookup}>
+      <form className="nameForm" onSubmit={handleSubmit}>
         <label htmlFor="student-name">Name (Please enter your short Name)</label>
         <div className="inlineControls">
           <input
@@ -257,6 +229,7 @@ export function UserCheckIn() {
             name="name"
             autoComplete="name"
             value={name}
+            disabled={isSaving}
             onKeyDown={handleNameKeyDown}
             onChange={(event) => {
               setName(sanitizeNameInput(event.target.value));
@@ -268,30 +241,40 @@ export function UserCheckIn() {
           />
         </div>
 
-        {lookup.status !== "idle" ? (
-          <div className="responseGroup" aria-label="Yoga response">
-            <button
-              className="choiceButton yesChoice"
-              type="button"
-              onClick={() => saveCheckIn("yes")}
-              disabled={isSaving}
-            >
-              Yes
-            </button>
-            <button
-              className="choiceButton noChoice"
-              type="button"
-              onClick={() => saveCheckIn("no")}
-              disabled={isSaving}
-            >
-              No
-            </button>
-          </div>
-        ) : null}
+        <div className="responseGroup" aria-label="Yoga response">
+          <button
+            className={`choiceButton yesChoice${
+              selectedResponse === "yes" ? " selectedChoice" : ""
+            }`}
+            type="button"
+            aria-pressed={selectedResponse === "yes"}
+            onClick={() => {
+              setSelectedResponse("yes");
+              setError("");
+            }}
+            disabled={isSaving}
+          >
+            Yes
+          </button>
+          <button
+            className={`choiceButton noChoice${
+              selectedResponse === "no" ? " selectedChoice" : ""
+            }`}
+            type="button"
+            aria-pressed={selectedResponse === "no"}
+            onClick={() => {
+              setSelectedResponse("no");
+              setError("");
+            }}
+            disabled={isSaving}
+          >
+            No
+          </button>
+        </div>
 
         <div className="inlineControls">
-          <button className="button primaryButton" type="submit" disabled={isLookingUp}>
-            {isLookingUp ? "Checking" : "Submit"}
+          <button className="button primaryButton" type="submit" disabled={isSaving}>
+            {isSaving ? "Submitting" : "Submit"}
           </button>
         </div>
       </form>
