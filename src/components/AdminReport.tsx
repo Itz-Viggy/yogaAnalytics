@@ -176,7 +176,7 @@ export function AdminReport({ defaultDate }: AdminReportProps) {
             onChange={(event) => setDate(event.target.value)}
           />
           <button className="button primaryButton" type="submit" disabled={isLoading}>
-            {isLoading ? "Generating" : "Generate"}
+            {isLoading ? "Generating" : "Generate Report"}
           </button>
         </form>
       </div>
